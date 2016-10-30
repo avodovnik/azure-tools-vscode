@@ -11,8 +11,7 @@ export class CommandHandler {
      * and opening the browser, to start the process for the user.
      */
     performLogin() {
-        console.log("Hello, it's me.");    
+        console.log("Hello, it's me. I was wondering if after all this years you'd like to meet?");    
     } 
-
 
 }
