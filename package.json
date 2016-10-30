@@ -49,8 +49,8 @@
         "category": "Azure"
       },
       {
-        "command": "createFunction.simple",
-        "title": "create an azure function (simple)",
+        "command": "azure.login",
+        "title": "Login",
         "category": "Azure"
       }
     ]
