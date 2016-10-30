@@ -1,3 +1,7 @@
+## 0.1.0 - 2016-11-xx
+- Migration to TypeScript
+- Refactoring to provide better testability
+
 ## 0.0.7 - 2016-10-26
 - **Added support for all Azure regions**
 - Changed publisher and moved within Marketplace.
