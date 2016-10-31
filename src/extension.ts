@@ -25,6 +25,7 @@ export function activate(context: vscode.ExtensionContext) {
     console.log('Azure Tools are now active.');
 
     internalRegisterCommand(context, 'login', () => commandHandler.performLogin());
+    internalRegisterCommand(context, 'selectSubscription', () => commandHandler.selectSubscription());
 
     // internalRegisterCommand(context, 'sayHello', () => {
     //     vscode.window.showInformationMessage(strings.uiResource.helloWorldMessage);

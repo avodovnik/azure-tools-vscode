@@ -52,6 +52,11 @@
         "command": "azure.login",
         "title": "Login",
         "category": "Azure"
+      },
+      {
+        "command": "azure.selectSubscription",
+        "title" : "Select Active Subscription",
+        "category": "Azure"
       }
     ]
   },

@@ -1,4 +1,5 @@
 import { AzureService } from './AzureService';
+import { AzureState } from './AzureState';
 import { UIService } from './UIService';
 import * as constants from './strings';
 
@@ -21,8 +22,10 @@ export class CommandHandler {
      * and opening the browser, to start the process for the user.
      */
     performLogin() {
+
+        let ui = this._uiService;
         // notify the UI
-        vscode.window.setStatusBarMessage(constants.uiResource.login.begin);
+        let updateMessage = vscode.window.setStatusBarMessage(constants.uiResource.login.begin);
 
         this._azureService.interactiveLogin((token, url) => {
             // show the user a message
@@ -40,10 +43,56 @@ export class CommandHandler {
                     open(url);
                 }
             });
-        }).then(() => {
-            vscode.window.showInformationMessage("Signed in.");
-        }, () => {
-            vscode.window.showErrorMessage("There was an error signing you in.");
+        }).then((state: AzureState) => {
+
+            // we need to update the UI to reflect new state
+            ui.renderState(state);
+
+            vscode.window.showInformationMessage(constants.uiResource.login.success.replace("{0}", state.username));
+
+            // clear the status bar message
+            updateMessage.dispose();
+
+        }, (reason) => {
+
+            let error = "There was an error signing you in.";
+            if (reason) {
+                error = error + ' ' + reason;
+            }
+            vscode.window.showErrorMessage(error);
+
+            // remember to clear the message, otherwsie it just stays stuck there
+            updateMessage.dispose();
+        });
+    }
+
+    selectSubscription() {
+        let status = vscode.window.setStatusBarMessage(constants.uiResource.subscriptionSelection.status);
+        // map all subscriptions into ui item, and render into quick pick
+        var items = this._azureService.getActiveSubscriptions().map(sub => {
+            let item: vscode.QuickPickItem = {
+                label: sub.name,
+                description: sub.id
+            };
+
+            return item;
+        });
+
+        let ui = this._uiService;
+        vscode.window.showQuickPick(items).then(selected => {
+            if (!selected) return;
+
+            this._azureService.setActiveSubscription(selected.label, selected.description)
+                .then((state => {
+                    vscode.window.showInformationMessage(constants.uiResource.subscriptionSelection.finish.replace('{0}', (state as AzureState).selectedSubscription.name));
+                    // re-render the state
+                    ui.renderState(state as AzureState);
+                    // clean up UI status
+                    status.dispose();
+                }), (reason => {
+                    vscode.window.showErrorMessage("There was a problem selecting the subscription: " + reason);
+                    status.dispose();
+                }))
         });
     }
 
