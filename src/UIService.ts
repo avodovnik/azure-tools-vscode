@@ -11,6 +11,10 @@ export class UIService {
 
     renderState(state: AzureState) {
         if (!this._uiInitialized) { this.initUi(state); }
+
+        // update the buttons
+        this._btnSubscription.tooltip = constants.uiResource.statusBarElements.subscription.tooltip.replace("{0}", state.selectedSubscription.name);
+        this._btnRegion.tooltip = constants.uiResource.statusBarElements.region.noRegionTooltip;
     }
 
     private initUi(state: AzureState) {
