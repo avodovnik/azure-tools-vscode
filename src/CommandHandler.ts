@@ -23,8 +23,8 @@ export class CommandHandler {
      * Checks to see if we have an active session.
      * Displays an error message if not.
      */
-    checkActiveState() : boolean {
-        if(this._azureService._state.credentials) return true;
+    checkActiveState(): boolean {
+        if (this._azureService._state.credentials) return true;
 
         vscode.window.showErrorMessage(constants.uiResource.login.noValidLogin);
         return false;
@@ -79,7 +79,7 @@ export class CommandHandler {
     }
 
     selectSubscription() {
-        if(!this.checkActiveState()) return;
+        if (!this.checkActiveState()) return;
 
         let status = vscode.window.setStatusBarMessage(constants.uiResource.subscriptionSelection.status);
         // map all subscriptions into ui item, and render into quick pick
@@ -110,9 +110,46 @@ export class CommandHandler {
         });
     }
 
+    selectRegion() {
+        if (!this.checkActiveState()) return;
+
+        let status = vscode.window.setStatusBarMessage(constants.uiResource.regionSelection.status);
+
+        var items = this._azureService.getAvailableRegionsForActiveSubscription()
+            .then(
+            (regions) => {
+                let dItems = regions.map(i => {
+                    return <Models.QuickListItemWithId>
+                        {
+                            label: i.name,
+                            id: i.id,
+                            description: null,
+                            _object: i
+                        };
+                });
+
+                vscode.window.showQuickPick(dItems).then(selected => {
+                    status.dispose();
+
+                    if (!selected) { return; }
+
+                    this._azureService._state.selectedRegion = selected._object;
+                    // rerender new state
+                    this._uiService.renderState(this._azureService._state);
+
+                    vscode.window.showInformationMessage(constants.uiResource.regionSelection.finish.replace('{0}',
+                        selected.label));
+                });
+            },
+            (reason) => {
+                vscode.window.showErrorMessage("There was a problem selecting the region: " + reason);
+                status.dispose();
+            });
+    }
+
     browseInPortal() {
-        if(!this.checkActiveState()) return;
-        
+        if (!this.checkActiveState()) return;
+
         let status = vscode.window.setStatusBarMessage("Opening portal...");
 
         this._azureService.getFullResourceList().then((items) => {

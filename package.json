@@ -62,6 +62,11 @@
         "command": "azure.browseInPortal",
         "title": "Browse in Portal...",
         "category": "Azure"
+      },
+      {
+        "command": "azure.selectRegion",
+        "title" : "Select Region...",
+        "category": "Azure"
       }
     ]
   },

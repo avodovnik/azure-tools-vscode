@@ -9,5 +9,11 @@ export interface Resource {
 }
 
 export interface QuickListItemWithId extends vscode.QuickPickItem {
-    id : any
+    id : any,
+    _object? : any
+}
+
+export interface Region {
+    name : string,
+    id : string
 }

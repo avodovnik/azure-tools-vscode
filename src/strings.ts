@@ -12,6 +12,10 @@ export const uiResource = {
         status: 'Selecting Azure Subscription...',
         finish: 'Azure Subscription ({0}) was success.'
     },
+    regionSelection: {
+        status: 'Selecting Azure Region...',
+        finish: 'Azure Region ({0}) was selected.'
+    },
     statusBarElements: {
         subscription: {
             tooltip: "Selected subscription: {0}. Click to change."

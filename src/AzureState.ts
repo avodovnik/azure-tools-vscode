@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import * as Models from './Models';
 
 // we'll pass this along the various services, so best
 // to declare as interface
@@ -8,6 +9,7 @@ export interface AzureState {
     accessToken?: string,
     subscriptions?: Array<AzureStateSubscription>,
     selectedSubscription?: AzureStateSubscription,
+    selectedRegion? : Models.Region,
     username?: string
 }
 

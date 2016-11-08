@@ -28,6 +28,27 @@ export class AzureService {
         return this._state.subscriptions;
     }
 
+    getAvailableRegionsForActiveSubscription(): Thenable<AzureModels.Region[]> {
+        return new Promise((resolve, reject) => {
+            // "special" client
+            let client = new resourceManager.SubscriptionClient(this._state.credentials);
+
+            client.subscriptions.listLocations(this._state.selectedSubscription.id, function (err, result) {
+                if (err) reject(err);
+
+                let items: AzureModels.Region[] = result.map(item => {
+                    return <AzureModels.Region>
+                        {
+                            name: item.displayName,
+                            id: item.id
+                        };
+                });
+
+                resolve(items);
+            });
+        });
+    }
+
     setActiveSubscription(name: string, id: string): Thenable<any> {
         return new Promise((resolve, reject) => {
             var activeSubscription = this._state.subscriptions.find(item => { return item.name == name && item.id === id });
@@ -41,7 +62,7 @@ export class AzureService {
         });
     }
 
-    createNewResourceGroup(name: string) : Thenable<any> {
+    createNewResourceGroup(name: string): Thenable<any> {
         return new Promise((resolve, reject) => {
             var client = _createArmClient(this._state);
         });
@@ -111,17 +132,17 @@ export class AzureService {
 
     }
 
-    getFullResourceList() : Thenable<AzureModels.Resource[]>{
+    getFullResourceList(): Thenable<AzureModels.Resource[]> {
         return new Promise((resolve, reject) => {
             let client = _createArmClient(this._state);
 
-            client.resources.list(function(err, result) {
-                if(err) {
+            client.resources.list(function (err, result) {
+                if (err) {
                     reject(err);
                 }
 
                 var final = result.map((item) => {
-                    let x : AzureModels.Resource = {
+                    let x: AzureModels.Resource = {
                         _object: item,
                         id: item.id,
                         url: '',
@@ -129,8 +150,7 @@ export class AzureService {
                     };
 
                     // a bit hackish, but we have to do it this way
-                    if(item.kind)
-                    {
+                    if (item.kind) {
                         x.kind = item.kind
                     }
 
@@ -143,6 +163,6 @@ export class AzureService {
     }
 }
 
-function _createArmClient(state : AzureState) : any {
+function _createArmClient(state: AzureState): any {
     return new resourceManager.ResourceManagementClient(state.credentials, state.selectedSubscription.id);
 }

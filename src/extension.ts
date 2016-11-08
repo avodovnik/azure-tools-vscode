@@ -27,6 +27,7 @@ export function activate(context: vscode.ExtensionContext) {
     internalRegisterCommand(context, 'login', () => commandHandler.performLogin());
     internalRegisterCommand(context, 'selectSubscription', () => commandHandler.selectSubscription());    
     internalRegisterCommand(context, 'browseInPortal', () => commandHandler.browseInPortal());
+    internalRegisterCommand(context, 'selectRegion', () => commandHandler.selectRegion());
 
     // internalRegisterCommand(context, 'sayHello', () => {
     //     vscode.window.showInformationMessage(strings.uiResource.helloWorldMessage);
