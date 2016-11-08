@@ -2,6 +2,7 @@ import { AzureService } from './AzureService';
 import { AzureState } from './AzureState';
 import { UIService } from './UIService';
 import * as constants from './strings';
+import * as Models from './Models';
 
 // TODO: this is sort of cheating...
 import * as vscode from 'vscode';
@@ -16,6 +17,17 @@ export class CommandHandler {
     constructor(azureService: AzureService, uiService: UIService) {
         this._azureService = azureService;
         this._uiService = uiService;
+    }
+
+    /** 
+     * Checks to see if we have an active session.
+     * Displays an error message if not.
+     */
+    checkActiveState() : boolean {
+        if(this._azureService._state.credentials) return true;
+
+        vscode.window.showErrorMessage(constants.uiResource.login.noValidLogin);
+        return false;
     }
 
     /** Starts the interactive login process, copying the code to the clipboard
@@ -67,6 +79,8 @@ export class CommandHandler {
     }
 
     selectSubscription() {
+        if(!this.checkActiveState()) return;
+
         let status = vscode.window.setStatusBarMessage(constants.uiResource.subscriptionSelection.status);
         // map all subscriptions into ui item, and render into quick pick
         var items = this._azureService.getActiveSubscriptions().map(sub => {
@@ -80,7 +94,7 @@ export class CommandHandler {
 
         let ui = this._uiService;
         vscode.window.showQuickPick(items).then(selected => {
-            if (!selected) return;
+            if (!selected) { status.dispose(); return; }
 
             this._azureService.setActiveSubscription(selected.label, selected.description)
                 .then((state => {
@@ -94,6 +108,37 @@ export class CommandHandler {
                     status.dispose();
                 }))
         });
+    }
+
+    browseInPortal() {
+        if(!this.checkActiveState()) return;
+        
+        let status = vscode.window.setStatusBarMessage("Opening portal...");
+
+        this._azureService.getFullResourceList().then((items) => {
+            var quickPickItems = items.map(x => {
+                return <Models.QuickListItemWithId>
+                    {
+                        label: x.name,
+                        description: x.kind,
+                        id: x.id
+                    };
+            });
+
+            vscode.window.showQuickPick(quickPickItems).then(selected => {
+                status.dispose();
+                if (!selected) { return; }
+
+                open(constants.config.portalUrl + selected.id);
+            });
+
+
+        }, (reason) => {
+            vscode.window.showErrorMessage("There was a problem listing all resources: " + reason);
+            status.dispose();
+        });
+
+
     }
 
 }

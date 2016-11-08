@@ -5,11 +5,12 @@ export const uiResource = {
         success: 'You are now signed in as {0}.',
         elements: {
             signInButton: "Sign In"
-        }
+        },
+        noValidLogin: 'You are not currently logged in. Please login first, then try again.'
     },
     subscriptionSelection: {
-        status : 'Selecting Azure Subscription...',
-        finish : 'Azure Subscription ({0}) was success.'
+        status: 'Selecting Azure Subscription...',
+        finish: 'Azure Subscription ({0}) was success.'
     },
     statusBarElements: {
         subscription: {
@@ -21,3 +22,7 @@ export const uiResource = {
         }
     }
 };
+
+export const config = {
+    portalUrl: 'https://portal.azure.com/#resource'
+}

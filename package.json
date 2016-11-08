@@ -57,6 +57,11 @@
         "command": "azure.selectSubscription",
         "title" : "Select Active Subscription",
         "category": "Azure"
+      },
+      {
+        "command": "azure.browseInPortal",
+        "title": "Browse in Portal...",
+        "category": "Azure"
       }
     ]
   },
